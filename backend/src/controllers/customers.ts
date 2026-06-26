@@ -118,7 +118,7 @@ export const getCustomers = async (
 
         const options = {
             sort,
-            skip: (normalizedPage  - 1) * normalizedLimit,
+            skip: (normalizedPage - 1) * normalizedLimit,
             limit: normalizedLimit,
         }
 

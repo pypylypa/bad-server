@@ -9,7 +9,6 @@ import { DB_ADDRESS } from './config'
 import errorHandler from './middlewares/error-handler'
 import serveStatic from './middlewares/serverStatic'
 import routes from './routes'
-import { csrfProtection } from './middlewares/csrf'
 import { limiter } from './middlewares/rate-limiter'
 
 const { PORT = 3000 } = process.env
@@ -28,10 +27,6 @@ app.use(serveStatic(path.join(__dirname, 'public')))
 
 app.use(urlencoded({ extended: true, limit: '50kb' }))
 app.use(json({ limit: '50kb' }))
-
-app.get('/csrf-token', csrfProtection, (req, res) => {
-    res.send(req.csrfToken());
-});
 
 app.options('*', cors({
     origin: 'http://localhost:5173',
