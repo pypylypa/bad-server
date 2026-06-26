@@ -11,6 +11,7 @@ import {
 import auth from '../middlewares/auth'
 import { csrfProtection, generateCsrfToken } from '../middlewares/csrf'
 import { validateUserUpdateBody } from '../middlewares/validations'
+import { limiter } from '../middlewares/rate-limiter'
 
 const authRouter = Router()
 authRouter.get('/csrf-token', (req, res) => {
@@ -20,7 +21,7 @@ authRouter.get('/csrf-token', (req, res) => {
 authRouter.get('/user', auth, getCurrentUser)
 authRouter.patch('/me', csrfProtection, auth, validateUserUpdateBody, updateCurrentUser)
 authRouter.get('/user/roles', auth, getCurrentUserRoles)
-authRouter.post('/login', login)
+authRouter.post('/login', limiter, login)
 authRouter.post('/token', csrfProtection, refreshAccessToken)
 authRouter.post('/logout', csrfProtection, logout)
 authRouter.post('/register', register)
