@@ -2,12 +2,25 @@ import { Joi, celebrate } from 'celebrate'
 import { Types } from 'mongoose'
 
 // eslint-disable-next-line no-useless-escape
-export const phoneRegExp = /^(\+\d+)?(?:\s|-?|\(?\d+\)?)+$/
+export const phoneRegExp = /^\+?[0-9\s()-]{5,30}$/
 
 export enum PaymentType {
     Card = 'card',
     Online = 'online',
 }
+
+// валидация обновления пользователя
+export const validateUserUpdateBody = celebrate({
+    body: Joi.object()
+        .keys({
+            name: Joi.string().min(2).max(30).required().messages({
+                'string.min': 'Минимальная длина поля "name"- 2',
+                'string.max': 'Максимальная длина поля "name"- 30',
+                'string.empty': 'Поле "name" должно быть заполнено',
+            }),
+        })
+        .required(),
+})
 
 // валидация id
 export const validateOrderBody = celebrate({
@@ -21,6 +34,9 @@ export const validateOrderBody = celebrate({
                     return helpers.message({ custom: 'Невалидный id' })
                 })
             )
+            .min(1)
+            .max(100)
+            .required()
             .messages({
                 'array.empty': 'Не указаны товары',
             }),
@@ -32,19 +48,24 @@ export const validateOrderBody = celebrate({
                     'Указано не валидное значение для способа оплаты, возможные значения - "card", "online"',
                 'string.empty': 'Не указан способ оплаты',
             }),
-        email: Joi.string().email().required().messages({
+        email: Joi.string().email().required().max(100).messages({
             'string.empty': 'Не указан email',
+            'string.max': 'Максимальная длина email- 100 символов'
         }),
-        phone: Joi.string().required().pattern(phoneRegExp).messages({
+        phone: Joi.string().required().max(30).pattern(phoneRegExp).messages({
             'string.empty': 'Не указан телефон',
+            'string.max': 'Максимальная длина телефона- 30 символов',
         }),
-        address: Joi.string().required().messages({
+        address: Joi.string().required().max(100).messages({
             'string.empty': 'Не указан адрес',
+            'string.max': 'Максимальная длина адреса- 100 символов',
         }),
         total: Joi.number().required().messages({
             'string.empty': 'Не указана сумма заказа',
         }),
-        comment: Joi.string().optional().allow(''),
+        comment: Joi.string().optional().allow('').max(500).messages({
+            'string.max': 'Максимальная длина комментария- 500 символов',
+        }),
     }),
 })
 
@@ -61,11 +82,15 @@ export const validateProductBody = celebrate({
             fileName: Joi.string().required(),
             originalName: Joi.string().required(),
         }),
-        category: Joi.string().required().messages({
+        category: Joi.string().required().min(2).max(30).messages({
             'string.empty': 'Поле "category" должно быть заполнено',
+            'string.min': 'Минимальная длина поля "category" - 2',
+            'string.max': 'Максимальная длина поля "category" - 30',
         }),
-        description: Joi.string().required().messages({
+        description: Joi.string().required().min(2).max(1000).messages({
             'string.empty': 'Поле "description" должно быть заполнено',
+            'string.min': 'Минимальная длина поля "description" - 2',
+            'string.max': 'Максимальная длина поля "description" - 1000',
         }),
         price: Joi.number().allow(null),
     }),
@@ -81,8 +106,14 @@ export const validateProductUpdateBody = celebrate({
             fileName: Joi.string().required(),
             originalName: Joi.string().required(),
         }),
-        category: Joi.string(),
-        description: Joi.string(),
+        category: Joi.string().min(2).max(30).messages({
+            'string.min': 'Минимальная длина поля "category" - 2',
+            'string.max': 'Максимальная длина поля "category" - 30',
+        }),
+        description: Joi.string().min(2).max(1000).messages({
+            'string.min': 'Минимальная длина поля "description" - 2',
+            'string.max': 'Максимальная длина поля "description" - 1000',
+        }),
         price: Joi.number().allow(null),
     }),
 })

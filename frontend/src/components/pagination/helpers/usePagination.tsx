@@ -14,7 +14,7 @@ interface PaginationResult<_, U> {
     setPage: (page: number) => void
     setLimit: (limit: number) => void
 }
-
+ 
 const usePagination = <T, U>(
     asyncAction: AsyncThunk<T, Record<string, unknown>, any>,
     selector: (state: RootState) => U[],
@@ -47,7 +47,6 @@ const usePagination = <T, U>(
     }, [currentPage, limit, searchParams])
 
     const updateURL = (newParams: Record<string, any>) => {
-        3
         const updatedParams = new URLSearchParams(searchParams)
         Object.entries(newParams).forEach(([key, value]) => {
             if (value !== undefined) {

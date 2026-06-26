@@ -7,6 +7,7 @@ import ConflictError from '../errors/conflict-error'
 import NotFoundError from '../errors/not-found-error'
 import Product from '../models/product'
 import movingFile from '../utils/movingFile'
+import { clean } from '../utils/sanitize'
 
 // GET /product
 const getProducts = async (req: Request, res: Response, next: NextFunction) => {
@@ -52,11 +53,11 @@ const createProduct = async (
         }
 
         const product = await Product.create({
-            description,
+            description: clean(description),
             image,
-            category,
+            category: clean(category),
             price,
-            title,
+            title: clean(title),
         })
         return res.status(constants.HTTP_STATUS_CREATED).send(product)
     } catch (error) {
@@ -81,7 +82,7 @@ const updateProduct = async (
 ) => {
     try {
         const { productId } = req.params
-        const { image } = req.body
+        const { title, description, category, price, image } = req.body
 
         // Переносим картинку из временной папки
         if (image) {
@@ -96,9 +97,11 @@ const updateProduct = async (
             productId,
             {
                 $set: {
-                    ...req.body,
-                    price: req.body.price ? req.body.price : null,
-                    image: req.body.image ? req.body.image : undefined,
+                    ...(title !== undefined && { title: clean(title) }),
+                    ...(description !== undefined && { description: clean(description) }),
+                    ...(category !== undefined && { category: clean(category) }),
+                    ...(price !== undefined && { price }),
+                    ...(image !== undefined && { image }),
                 },
             },
             { runValidators: true, new: true }
