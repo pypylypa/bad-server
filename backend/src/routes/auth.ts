@@ -14,6 +14,10 @@ import { validateUserUpdateBody } from '../middlewares/validations'
 
 const authRouter = Router()
 
+const authRouter = Router()
+authRouter.get('/csrf-token', csrfProtection, (req, res) => {
+    res.status(200).json({ csrfToken: req.csrfToken() })
+});
 authRouter.get('/user', auth, getCurrentUser)
 authRouter.patch('/me', csrfProtection, auth, validateUserUpdateBody, updateCurrentUser)
 authRouter.get('/user/roles', auth, getCurrentUserRoles)

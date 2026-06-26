@@ -66,11 +66,12 @@ class Api {
     }
 
     protected getCsrfToken = async () => {
-    const response = await fetch(`${this.baseUrl}/csrf-token`, {
+    const response = await fetch(`${this.baseUrl}/auth/csrf-token`, {
         credentials: 'include',
     })
 
-    return response.text()
+    const data = await response.json()
+    return data.csrfToken
     }
 
     private refreshToken = async () => {
