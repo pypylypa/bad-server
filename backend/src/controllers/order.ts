@@ -40,6 +40,14 @@ export const getOrders = async (
             filters.status = status
         }
 
+        if (status && typeof status !== 'string') {
+            return next(new BadRequestError('Некорректный статус заказа'))
+        }
+
+        if (search && typeof search !== 'string') {
+            return next(new BadRequestError('Некорректный параметр поиска'))
+        }
+
         if (totalAmountFrom) {
             filters.totalAmount = {
                 ...filters.totalAmount,
