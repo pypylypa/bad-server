@@ -13,8 +13,6 @@ import { csrfProtection } from '../middlewares/csrf'
 import { validateUserUpdateBody } from '../middlewares/validations'
 
 const authRouter = Router()
-
-const authRouter = Router()
 authRouter.get('/csrf-token', csrfProtection, (req, res) => {
     res.status(200).json({ csrfToken: req.csrfToken() })
 });
