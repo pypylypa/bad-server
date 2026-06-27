@@ -9,22 +9,30 @@ import { DB_ADDRESS } from './config'
 import errorHandler from './middlewares/error-handler'
 import serveStatic from './middlewares/serverStatic'
 import routes from './routes'
+import { limiter } from './middlewares/rate-limiter'
 
 const { PORT = 3000 } = process.env
 const app = express()
 
 app.use(cookieParser())
 
-app.use(cors())
+app.use(cors({
+    origin: 'http://localhost:5173',
+    credentials: true,
+}))
 // app.use(cors({ origin: ORIGIN_ALLOW, credentials: true }));
 // app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(serveStatic(path.join(__dirname, 'public')))
 
-app.use(urlencoded({ extended: true }))
-app.use(json())
+app.use(urlencoded({ extended: true, limit: '50kb' }))
+app.use(json({ limit: '50kb' }))
 
-app.options('*', cors())
+app.options('*', cors({
+    origin: 'http://localhost:5173',
+    credentials: true,
+}))
+app.use(limiter)
 app.use(routes)
 app.use(errors())
 app.use(errorHandler)

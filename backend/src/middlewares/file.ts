@@ -29,7 +29,8 @@ const storage = multer.diskStorage({
         file: Express.Multer.File,
         cb: FileNameCallback
     ) => {
-        cb(null, file.originalname)
+        const safeFileName = `${Date.now()}-${file.originalname.replace(/[^a-zA-Z0-9.-]/g, '')}`
+        cb(null, safeFileName)
     },
 })
 
@@ -53,4 +54,10 @@ const fileFilter = (
     return cb(null, true)
 }
 
-export default multer({ storage, fileFilter })
+export default multer({
+    storage,
+    fileFilter,
+    limits: {
+        fileSize: 5 * 1024 * 1024,
+    },
+})
